@@ -6,9 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 @SpringBootApplication
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 public class OwnerApplication {
-
+//	@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 	public static void main(String[] args) {
 		SpringApplication.run(OwnerApplication.class, args);
 	}
