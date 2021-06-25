@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "rooms")
+@Entity(name = "rooms")
 public class Rooms {
 
     @Id
@@ -48,7 +48,7 @@ public class Rooms {
     private Integer price;
 
     @Column(name = "picture_url")
-    private List<String> pictureUrl;
+    private String pictureUrl;
 
     @Column(name = "created_at")
     @CreationTimestamp
