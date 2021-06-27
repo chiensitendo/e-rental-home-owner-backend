@@ -1,5 +1,6 @@
 package com.e_rental.owner.entities;
 
+import com.e_rental.owner.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,9 @@ public class Users {
 
     @Column(name = "email")
     private String email;
+
+    @Column(nullable = false)
+    private Role role;
 
     @Column(name = "prefecture")
     private String prefecture;
