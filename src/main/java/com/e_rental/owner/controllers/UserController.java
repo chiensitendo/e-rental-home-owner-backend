@@ -1,6 +1,5 @@
 package com.e_rental.owner.controllers;
 
-import com.e_rental.owner.entities.Users;
 import com.e_rental.owner.responses.UserListResponse;
 import com.e_rental.owner.services.UserService;
 import lombok.RequiredArgsConstructor;
