@@ -1,11 +1,9 @@
 package com.e_rental.owner.security;
 
 import com.e_rental.owner.entities.Users;
-import com.e_rental.owner.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -13,15 +11,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Optional;
 
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class UsernamePasswordAuthFilter extends OncePerRequestFilter {
 
-    @Autowired
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     private final UserAuthenticationProvider userAuthenticationProvider;
 
-    public JwtAuthFilter(UserAuthenticationProvider userAuthenticationProvider) {
+    public UsernamePasswordAuthFilter(UserAuthenticationProvider userAuthenticationProvider) {
         this.userAuthenticationProvider = userAuthenticationProvider;
     }
 
@@ -29,12 +26,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
-
-        String token = userAuthenticationProvider.resolveToken(httpServletRequest);
-
-        if (token != null) {
+        if ("api/user/signIn".equals(httpServletRequest.getServletPath())
+                && HttpMethod.POST.matches(httpServletRequest.getMethod())) {
+            Users user = MAPPER.readValue(httpServletRequest.getInputStream(), Users.class);
             try {
-                SecurityContextHolder.getContext().setAuthentication(userAuthenticationProvider.validateToken(token));
+                SecurityContextHolder.getContext().setAuthentication(
+                        userAuthenticationProvider.validateUser(user));
             } catch (RuntimeException e) {
                 SecurityContextHolder.clearContext();
                 throw e;
@@ -43,6 +40,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
-
-
 }

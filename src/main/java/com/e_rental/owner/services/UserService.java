@@ -52,6 +52,9 @@ public class UserService {
 
     public ResponseEntity<String> signIn(LoginRequest user) throws ErrorDto {
         try{
+
+
+
             Authentication auth =
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
 
