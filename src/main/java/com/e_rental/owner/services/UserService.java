@@ -2,7 +2,7 @@ package com.e_rental.owner.services;
 
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.dto.request.LoginRequest;
-import com.e_rental.owner.entities.Users;
+import com.e_rental.owner.entities.User;
 import com.e_rental.owner.repositories.UserRepository;
 import com.e_rental.owner.responses.UserListResponse;
 import com.e_rental.owner.security.SecurityConstants;
@@ -27,11 +27,15 @@ public class UserService {
 
     @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
     private UserAuthenticationProvider userAuthenticationProvider;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     public ResponseEntity<List<UserListResponse>> getAll() {
-        List<Users> userList = userRepository.findAll();
+        List<User> userList = userRepository.findAll();
         List<UserListResponse> response = userList.stream().map(user -> {
             UserListResponse res = new UserListResponse();
             res.name = user.getUsername();
@@ -40,31 +44,29 @@ public class UserService {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<Users> signUp(Users user) throws ErrorDto {
-        if(!userRepository.existsByUsername(user.getUsername())){
-            userRepository.save(user);
-            return new ResponseEntity<Users>(user, HttpStatus.CREATED);
-        }else {
-            throw new ErrorDto("Tài khoản này đã tồn tại");
+    public ResponseEntity<String> signIn(LoginRequest user) throws ErrorDto {
+        try {
+            Authentication auth =
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            String userName = user.getUsername();
+            String token = SecurityConstants.TOKEN_PREFIX + userAuthenticationProvider.createToken(userName,
+                    userRepository.findByUsername(userName).get().getRole());
+
+            return ResponseEntity.ok(token);
+
+        } catch (AuthenticationException e) {
+            throw new ErrorDto("Tên tài khoản hoặc Mật khẩu không đúng !");
         }
     }
 
-
-    public ResponseEntity<String> signIn(LoginRequest user) throws ErrorDto {
-        try{
-
-
-
-            Authentication auth =
-                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            String jwt = SecurityConstants.TOKEN_PREFIX + userAuthenticationProvider.createToken(user.getUserName());
-
-            return ResponseEntity.ok(jwt);
-
-        }catch (AuthenticationException e){
-            throw new ErrorDto("Tên tài khoản hoặc Mật khẩu không đúng !");
+    public ResponseEntity<User> signUp(User user) throws ErrorDto {
+        if (!userRepository.existsByUsername(user.getUsername())) {
+            userRepository.save(user);
+            return new ResponseEntity<User>(user, HttpStatus.CREATED);
+        } else {
+            throw new ErrorDto("Tài khoản này đã tồn tại");
         }
     }
 }

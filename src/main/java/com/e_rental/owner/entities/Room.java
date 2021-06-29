@@ -5,26 +5,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "rooms")
-public class Rooms {
+public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "room_id")
     private Long roomId;
 
-    @ManyToOne(targetEntity = Users.class, fetch = FetchType.LAZY)
-    private Users users;
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    private User user;
 
     @Column(name = "address")
     private String address;
