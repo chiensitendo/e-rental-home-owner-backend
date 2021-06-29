@@ -3,7 +3,9 @@ package com.e_rental.owner.services;
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.entities.User;
+import com.e_rental.owner.enums.StatusCode;
 import com.e_rental.owner.repositories.UserRepository;
+import com.e_rental.owner.responses.LoginResponse;
 import com.e_rental.owner.responses.UserListResponse;
 import com.e_rental.owner.security.SecurityConstants;
 import com.e_rental.owner.security.UserAuthenticationProvider;
@@ -44,17 +46,23 @@ public class UserService {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<String> signIn(LoginRequest user) throws ErrorDto {
+    public ResponseEntity<LoginResponse> signIn(LoginRequest user) throws ErrorDto {
         try {
             Authentication auth =
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(auth);
-
             String userName = user.getUsername();
-            String token = SecurityConstants.TOKEN_PREFIX + userAuthenticationProvider.createToken(userName,
-                    userRepository.findByUsername(userName).get().getRole());
-
-            return ResponseEntity.ok(token);
+            User dbUser = userRepository.findByUsername(userName).get();
+//            String token = SecurityConstants.TOKEN_PREFIX + userAuthenticationProvider.createToken(userName,
+//                    dbUser.getRole());
+            LoginResponse res= new LoginResponse();
+            res.setCode(StatusCode.SUCCESS.getCode());
+            res.setRole(dbUser.getRole());
+            res.setToken(userAuthenticationProvider.createToken(userName,
+                    dbUser.getRole()));
+            res.setTokenType(SecurityConstants.TOKEN_PREFIX.strip());
+            res.setExpiredTime(SecurityConstants.EXPIRATION_TIME);
+            return ResponseEntity.ok(res);
 
         } catch (AuthenticationException e) {
             throw new ErrorDto("Tên tài khoản hoặc Mật khẩu không đúng !");

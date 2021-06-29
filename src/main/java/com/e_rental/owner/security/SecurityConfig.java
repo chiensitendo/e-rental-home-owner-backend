@@ -1,5 +1,6 @@
 package com.e_rental.owner.security;
 
+import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.services.UserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

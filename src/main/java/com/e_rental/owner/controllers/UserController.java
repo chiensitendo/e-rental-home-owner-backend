@@ -4,6 +4,7 @@ import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.dto.request.SignUpRequest;
 import com.e_rental.owner.entities.User;
+import com.e_rental.owner.responses.LoginResponse;
 import com.e_rental.owner.responses.UserListResponse;
 import com.e_rental.owner.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/user/signIn")
-    public ResponseEntity<String> signIn(@Valid @RequestBody LoginRequest loginRequest) throws ErrorDto {
+    public ResponseEntity<LoginResponse> signIn(@Valid @RequestBody LoginRequest loginRequest) throws ErrorDto {
         System.out.println(loginRequest);
         return userService.signIn(loginRequest);
     }

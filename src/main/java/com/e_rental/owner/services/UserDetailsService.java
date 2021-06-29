@@ -4,10 +4,12 @@ import com.e_rental.owner.entities.User;
 import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,14 +26,24 @@ public class UserDetailsService implements org.springframework.security.core.use
         this.userRepository = userRepository;
     }
 
+
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(userName);
         if (!user.isPresent()) {
             throw new UsernameNotFoundException("Login " + userName + " not found");
         }
-        return new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(),
-                getGrantedAuthority(user.get()));
+        User userItem = null;
+        try {
+
+            userItem = user.get();
+            getGrantedAuthority(userItem);
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return new org.springframework.security.core.userdetails.User(userItem.getEmail(), "{noop}" +userItem.getPassword(),
+                getGrantedAuthority(userItem));
     }
 
     private Collection<? extends GrantedAuthority> getGrantedAuthority(User user) {
@@ -43,5 +55,8 @@ public class UserDetailsService implements org.springframework.security.core.use
         }
         authorities.add(new SimpleGrantedAuthority(Role.ROLE_OWNER.name()));
         return authorities;
+    }
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
