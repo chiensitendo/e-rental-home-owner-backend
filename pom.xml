@@ -75,6 +75,10 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.heroku.sdk</groupId>
+				<artifactId>heroku-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 
