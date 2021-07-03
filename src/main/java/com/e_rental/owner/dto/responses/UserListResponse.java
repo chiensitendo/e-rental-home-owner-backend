@@ -1,4 +1,4 @@
-package com.e_rental.owner.responses;
+package com.e_rental.owner.dto.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

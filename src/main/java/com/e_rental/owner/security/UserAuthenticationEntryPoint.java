@@ -1,8 +1,7 @@
 package com.e_rental.owner.security;
 
-import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.enums.StatusCode;
-import com.e_rental.owner.responses.Response;
+import com.e_rental.owner.dto.responses.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.springframework.http.HttpHeaders;

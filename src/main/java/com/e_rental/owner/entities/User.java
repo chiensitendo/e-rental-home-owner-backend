@@ -1,5 +1,6 @@
 package com.e_rental.owner.entities;
 
+import com.e_rental.owner.enums.AuthProvider;
 import com.e_rental.owner.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name =  "users")
+@Entity(name = "users")
 public class User {
 
     @Id
@@ -23,7 +25,7 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name ="username")
+    @Column(name = "username")
     private String username;
 
     @Column(name = "password")
@@ -38,15 +40,22 @@ public class User {
     @Column(name = "prefecture")
     private String prefecture;
 
-    @Column(name ="created_at")
+    @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Column(name ="updated_at")
+    @Column(name = "updated_at")
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Room> roomList;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+
+    public void setProviderId(String id) {
+    }
 
 }

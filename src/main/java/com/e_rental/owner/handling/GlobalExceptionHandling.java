@@ -2,11 +2,10 @@ package com.e_rental.owner.handling;
 
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.enums.StatusCode;
-import com.e_rental.owner.responses.Response;
+import com.e_rental.owner.dto.responses.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 @ControllerAdvice(basePackages = "com.e_rental.owner.controllers")

@@ -4,11 +4,14 @@ import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.entities.User;
 import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.repositories.UserRepository;
+import com.e_rental.owner.security.dto.UserPrincipal;
 import com.e_rental.owner.services.UserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,6 +32,8 @@ public class UserAuthenticationProvider {
 
     private final UserRepository userRepository;
 
+    private final OAuth2 oauth2 = new OAuth2();
+
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -47,6 +52,22 @@ public class UserAuthenticationProvider {
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+
+
+    public String createToken(Authentication authentication){
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + SecurityConstants.EXPIRATION_TIME);
+
+        return Jwts.builder()
+                .setSubject(Long.toString(userPrincipal.getId()))
+                .setIssuedAt(new Date())
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+
     }
 
     public String resolveToken(HttpServletRequest httpServletRequest) {
@@ -82,6 +103,23 @@ public class UserAuthenticationProvider {
             throw new RuntimeException("Invalid password");
         }
 
+    }
+
+    public static final class OAuth2 {
+        private List<String> authorizedRedirectUris = new ArrayList<>();
+
+        public List<String> getAuthorizedRedirectUris() {
+            return authorizedRedirectUris;
+        }
+
+        public OAuth2 authorizedRedirectUris(List<String> authorizedRedirectUris) {
+            this.authorizedRedirectUris = authorizedRedirectUris;
+            return this;
+        }
+    }
+
+    public OAuth2 getOauth2() {
+        return oauth2;
     }
 
 }

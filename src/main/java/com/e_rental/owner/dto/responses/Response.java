@@ -1,6 +1,5 @@
-package com.e_rental.owner.responses;
+package com.e_rental.owner.dto.responses;
 
-import com.e_rental.owner.enums.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,17 +10,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginResponse extends Response {
+public class Response {
+    @JsonProperty
+    String code;
 
     @JsonProperty
-    String token;
+    String message;
 
-    @JsonProperty
-    String tokenType;
-
-    @JsonProperty
-    Role role;
-
-    @JsonProperty
-    long expiredTime;
 }
