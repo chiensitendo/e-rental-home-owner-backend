@@ -12,7 +12,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -30,9 +32,11 @@ public class UserAuthenticationProvider {
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
 
+    @Value("app.oauth2.authorizedRedirectUris")
+    private List<String> authorizedRedirectUris;
+
     private final UserRepository userRepository;
 
-    private final OAuth2 oauth2 = new OAuth2();
 
     @PostConstruct
     protected void init() {
@@ -103,23 +107,6 @@ public class UserAuthenticationProvider {
             throw new RuntimeException("Invalid password");
         }
 
-    }
-
-    public static final class OAuth2 {
-        private List<String> authorizedRedirectUris = new ArrayList<>();
-
-        public List<String> getAuthorizedRedirectUris() {
-            return authorizedRedirectUris;
-        }
-
-        public OAuth2 authorizedRedirectUris(List<String> authorizedRedirectUris) {
-            this.authorizedRedirectUris = authorizedRedirectUris;
-            return this;
-        }
-    }
-
-    public OAuth2 getOauth2() {
-        return oauth2;
     }
 
 }

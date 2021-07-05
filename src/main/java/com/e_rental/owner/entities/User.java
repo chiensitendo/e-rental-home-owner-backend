@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -34,28 +35,19 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "role_id")
+    @Column(name = "user_role")
     private Role role;
-
-    @Column(name = "prefecture")
-    private String prefecture;
 
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Room> roomList;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
-
-    public void setProviderId(String id) {
-    }
 
 }
