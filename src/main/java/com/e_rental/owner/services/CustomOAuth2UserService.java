@@ -2,6 +2,7 @@ package com.e_rental.owner.services;
 
 import com.e_rental.owner.entities.User;
 import com.e_rental.owner.enums.AuthProvider;
+import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.handling.OAuth2AuthenticationProcessingException;
 import com.e_rental.owner.repositories.UserRepository;
 import com.e_rental.owner.security.OAuth2.user.OAuth2UserInfo;
@@ -28,7 +29,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
 
-        OAuth2User oAuth2User = loadUser(oAuth2UserRequest);
+        OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
 
         try {
             return processOAuth2User(oAuth2UserRequest, oAuth2User);
@@ -67,6 +68,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
         user.setProviderId(oAuth2UserInfo.getId());
         user.setEmail(oAuth2UserInfo.getEmail());
+        user.setUsername(oAuth2UserInfo.getEmail());
+        user.setRole(Role.ROLE_USER);
         return userRepository.save(user);
     }
 

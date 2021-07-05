@@ -1,9 +1,11 @@
 server:
   port: 8081
-
 security.jwt.token.secret-key: my-secret-key
-
 spring:
+  datasource:
+    url: jdbc:postgresql://ec2-54-225-228-142.compute-1.amazonaws.com/d4f9261pss7cr3
+    username: bktboyjgyeviub
+    password: beacaa98a0ccda6676c60710f8503bd245d293b2002c93d760aacbdea5ce5492
   security:
     oauth2:
       client:
@@ -11,7 +13,7 @@ spring:
           google:
             clientId: 1093359169270-116eohrstdabjcbafhd143q44elr4i9f.apps.googleusercontent.com
             clientSecret: NnPZphepJY6qwC_94okz1FId
-            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            redirectUri: "{baseUrl}/api/oauth2/callback/{registrationId}"
             scope:
               - email
               - profile

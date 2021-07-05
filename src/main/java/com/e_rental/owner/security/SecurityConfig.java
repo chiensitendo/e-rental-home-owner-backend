@@ -35,11 +35,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private final UserAuthenticationEntryPoint userAuthenticationEntryPoint;
+
+    @Autowired
     private final UserAuthenticationProvider userAuthenticationProvider;
+
+    @Autowired
     private final UserDetailsService userDetailsService;
+
+    @Autowired
     private final CustomOAuth2UserService customOAuth2UserService;
+
+    @Autowired
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+
+    @Autowired
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+    @Autowired
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
 
@@ -59,6 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
     }
 
+
     @Bean
     public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
         return new HttpCookieOAuth2AuthorizationRequestRepository();
@@ -69,7 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
-        source.registerCorsConfiguration("/**", corsConfiguration);
+        source.registerCorsConfiguration("/api/**", corsConfiguration);
 
         return source;
     }
@@ -86,30 +99,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
                 .antMatchers("/api/users").permitAll()
-                .antMatchers("/api/user/signIn", "/api/user/signUp", "/oauth2/**").permitAll()
+                .antMatchers("/api/user/signIn", "/api/user/signUp", "/api/oauth2/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .oauth2Login().authorizationEndpoint()
-
-                // Need to add logout
-
-
-                .baseUri("/oauth2/authorize")
+                .baseUri("/api/oauth2/authorize")
                 .authorizationRequestRepository(cookieAuthorizationRequestRepository())
                 .and()
                 .redirectionEndpoint()
-                .baseUri("/oauth2/callback/*")
+                .baseUri("/api/oauth2/callback/*")
                 .and()
                 .userInfoEndpoint().userService(customOAuth2UserService)
                 .and()
                 .successHandler(oAuth2AuthenticationSuccessHandler)
-                .failureHandler(oAuth2AuthenticationFailureHandler)
-
-        ;
-
+                .failureHandler(oAuth2AuthenticationFailureHandler);
 
         http.addFilterBefore(new JwtAuthFilter(userAuthenticationProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class);
-
 
     }
 }

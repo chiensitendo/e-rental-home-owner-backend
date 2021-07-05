@@ -21,7 +21,7 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
@@ -34,7 +34,7 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "role_id")
     private Role role;
 
     @Column(name = "prefecture")
