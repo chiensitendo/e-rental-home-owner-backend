@@ -90,29 +90,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors().and()
-                .csrf().disable()
-                .httpBasic().disable()
-                .formLogin().disable()
-                .exceptionHandling().authenticationEntryPoint((userAuthenticationEntryPoint)).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .cors().and()
+            .csrf().disable()
+            .httpBasic().disable()
+            .formLogin().disable()
+            .exceptionHandling().authenticationEntryPoint((userAuthenticationEntryPoint)).and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
-                .authorizeRequests()
-                .antMatchers("/api/users").permitAll()
-                .antMatchers("/api/user/signIn", "/api/user/signUp", "/api/oauth2/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .oauth2Login().authorizationEndpoint()
-                .baseUri("/api/oauth2/authorize")
-                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
-                .and()
-                .redirectionEndpoint()
-                .baseUri("/api/oauth2/callback/*")
-                .and()
-                .userInfoEndpoint().userService(customOAuth2UserService)
-                .and()
-                .successHandler(oAuth2AuthenticationSuccessHandler)
-                .failureHandler(oAuth2AuthenticationFailureHandler);
+            .authorizeRequests()
+            .antMatchers("/api/owners/signin", "/api/owners/signup", "/api/oauth2/**").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .oauth2Login().authorizationEndpoint()
+            .baseUri("/api/oauth2/authorize")
+            .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+            .and()
+            .redirectionEndpoint()
+            .baseUri("/api/oauth2/callback/*")
+            .and()
+            .userInfoEndpoint().userService(customOAuth2UserService)
+            .and()
+            .successHandler(oAuth2AuthenticationSuccessHandler)
+            .failureHandler(oAuth2AuthenticationFailureHandler);
 
         http.addFilterBefore(new JwtAuthFilter(userAuthenticationProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class);
 

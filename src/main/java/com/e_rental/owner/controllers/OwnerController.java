@@ -3,7 +3,7 @@ package com.e_rental.owner.controllers;
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.dto.request.SignUpRequest;
-import com.e_rental.owner.entities.User;
+import com.e_rental.owner.entities.Owner;
 import com.e_rental.owner.dto.responses.LoginResponse;
 import com.e_rental.owner.dto.responses.UserListResponse;
 import com.e_rental.owner.services.UserService;
@@ -18,8 +18,8 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
-public class UserController {
+@RequestMapping("/api/owners")
+public class OwnerController {
 
     @Autowired
     private final UserService userService;
@@ -27,21 +27,21 @@ public class UserController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @GetMapping("/users")
+    @GetMapping()
     @ResponseBody
     public ResponseEntity<List<UserListResponse>> getAll() {
         return userService.getAll();
     }
 
-    @PostMapping("/user/signIn")
+    @PostMapping("/signin")
     public ResponseEntity<LoginResponse> signIn(@Valid @RequestBody LoginRequest loginRequest) throws ErrorDto {
         System.out.println(loginRequest);
         return userService.signIn(loginRequest);
     }
 
-    @PostMapping("/user/signUp")
-    public ResponseEntity<User> signUp(@Valid @RequestBody SignUpRequest signUpRequest) throws ErrorDto {
+    @PostMapping("/signup")
+    public ResponseEntity<Owner> signUp(@Valid @RequestBody SignUpRequest signUpRequest) throws ErrorDto {
         System.out.println(signUpRequest);
-        return userService.signUp(objectMapper.convertValue(signUpRequest, User.class));
+        return userService.signUp(objectMapper.convertValue(signUpRequest, Owner.class));
     }
 }

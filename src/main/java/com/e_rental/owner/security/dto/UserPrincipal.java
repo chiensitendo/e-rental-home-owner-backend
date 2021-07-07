@@ -1,10 +1,9 @@
 package com.e_rental.owner.security.dto;
 
-import com.e_rental.owner.entities.User;
+import com.e_rental.owner.entities.Owner;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,20 +32,20 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserPrincipal create(User user) {
+    public static UserPrincipal create(Owner owner) {
 
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new UserPrincipal(
-                user.getUserId(),
-                user.getEmail(),
-                user.getPassword(),
+                owner.getId(),
+                owner.getEmail(),
+                owner.getPassword(),
                 authorities
         );
     }
 
-    public static UserPrincipal create(User user, Map<String, Object> attributes) {
-        UserPrincipal userPrincipal = UserPrincipal.create(user);
+    public static UserPrincipal create(Owner owner, Map<String, Object> attributes) {
+        UserPrincipal userPrincipal = UserPrincipal.create(owner);
         userPrincipal.setAttributes(attributes);
         return userPrincipal;
     }

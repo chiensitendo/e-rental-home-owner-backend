@@ -1,24 +1,18 @@
 package com.e_rental.owner.security;
 
 import com.e_rental.owner.dto.request.LoginRequest;
-import com.e_rental.owner.entities.User;
+import com.e_rental.owner.entities.Owner;
 import com.e_rental.owner.enums.Role;
-import com.e_rental.owner.repositories.UserRepository;
+import com.e_rental.owner.repositories.OwnerRepository;
 import com.e_rental.owner.security.dto.UserPrincipal;
-import com.e_rental.owner.services.UserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +29,7 @@ public class UserAuthenticationProvider {
     @Value("app.oauth2.authorizedRedirectUris")
     private List<String> authorizedRedirectUris;
 
-    private final UserRepository userRepository;
+    private final OwnerRepository ownerRepository;
 
 
     @PostConstruct
@@ -99,8 +93,8 @@ public class UserAuthenticationProvider {
 
     public Authentication validateUser(LoginRequest user) {
         String userName = user.getUsername();
-        Optional<User> optionalUser = userRepository.findByUsername(userName);
-        User item = optionalUser.get();
+        Optional<Owner> optionalUser = ownerRepository.findByUsername(userName);
+        Owner item = optionalUser.get();
         if (user.getPassword().equals(item.getPassword())) {
             return new UsernamePasswordAuthenticationToken(item, null, Collections.emptyList());
         } else {

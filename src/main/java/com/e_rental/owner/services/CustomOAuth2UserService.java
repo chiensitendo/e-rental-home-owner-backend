@@ -1,14 +1,13 @@
 package com.e_rental.owner.services;
 
-import com.e_rental.owner.entities.User;
+import com.e_rental.owner.entities.Owner;
 import com.e_rental.owner.enums.AuthProvider;
 import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.handling.OAuth2AuthenticationProcessingException;
-import com.e_rental.owner.repositories.UserRepository;
+import com.e_rental.owner.repositories.OwnerRepository;
 import com.e_rental.owner.security.OAuth2.user.OAuth2UserInfo;
 import com.e_rental.owner.security.OAuth2.user.OAuth2UserInfoFactory;
 import com.e_rental.owner.security.dto.UserPrincipal;
-import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -24,7 +23,7 @@ import java.util.Optional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private OwnerRepository ownerRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
@@ -47,33 +46,32 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if ((oAuth2UserInfo.getEmail()).isEmpty()) {
             throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 Provider");
         }
-        Optional<User> optionalUser = userRepository.findByEmail(oAuth2UserInfo.getEmail());
-        User user;
+        Optional<Owner> optionalUser = ownerRepository.findByEmail(oAuth2UserInfo.getEmail());
+        Owner owner;
         if (optionalUser.isPresent()) {
-            user = optionalUser.get();
-            if (!user.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
+            owner = optionalUser.get();
+            if (!owner.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
                 throw new OAuth2AuthenticationProcessingException("You're signed up with "
-                        + user.getProvider() + " account. Please use your " + oAuth2UserRequest.getClientRegistration().getRegistrationId()
+                        + owner.getProvider() + " account. Please use your " + oAuth2UserRequest.getClientRegistration().getRegistrationId()
                         + " account to Login");
             }
-            user = updateExistingUser(user);
+            owner = updateExistingUser(owner);
         } else {
-            user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
+            owner = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
         }
-        return UserPrincipal.create(user, oAuth2User.getAttributes());
+        return UserPrincipal.create(owner, oAuth2User.getAttributes());
     }
 
-    private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        User user = new User();
-        user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
-        user.setEmail(oAuth2UserInfo.getEmail());
-        user.setUsername(oAuth2UserInfo.getEmail());
-        user.setRole(Role.ROLE_USER);
-        return userRepository.save(user);
+    private Owner registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+        Owner owner = new Owner();
+        owner.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
+        owner.setEmail(oAuth2UserInfo.getEmail());
+        owner.setUsername(oAuth2UserInfo.getEmail());
+        return ownerRepository.save(owner);
     }
 
-    private User updateExistingUser(User user) {
-        return userRepository.save(user);
+    private Owner updateExistingUser(Owner owner) {
+        return ownerRepository.save(owner);
     }
 
 }

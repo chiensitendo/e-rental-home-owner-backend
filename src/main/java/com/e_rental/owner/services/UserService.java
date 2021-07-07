@@ -2,9 +2,10 @@ package com.e_rental.owner.services;
 
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.dto.request.LoginRequest;
-import com.e_rental.owner.entities.User;
+import com.e_rental.owner.entities.Owner;
+import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.enums.StatusCode;
-import com.e_rental.owner.repositories.UserRepository;
+import com.e_rental.owner.repositories.OwnerRepository;
 import com.e_rental.owner.dto.responses.LoginResponse;
 import com.e_rental.owner.dto.responses.UserListResponse;
 import com.e_rental.owner.security.SecurityConstants;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     @Autowired
-    private final UserRepository userRepository;
+    private final OwnerRepository ownerRepository;
 
     @Autowired
     private UserAuthenticationProvider userAuthenticationProvider;
@@ -37,8 +38,8 @@ public class UserService {
     private AuthenticationManager authenticationManager;
 
     public ResponseEntity<List<UserListResponse>> getAll() {
-        List<User> userList = userRepository.findAll();
-        List<UserListResponse> response = userList.stream().map(user -> {
+        List<Owner> ownerList = ownerRepository.findAll();
+        List<UserListResponse> response = ownerList.stream().map(user -> {
             UserListResponse res = new UserListResponse();
             res.name = user.getUsername();
             return res;
@@ -52,14 +53,14 @@ public class UserService {
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(auth);
             String userName = user.getUsername();
-            User dbUser = userRepository.findByUsername(userName).get();
+            Owner dbOwner = ownerRepository.findByUsername(userName).get();
 //            String token = SecurityConstants.TOKEN_PREFIX + userAuthenticationProvider.createToken(userName,
 //                    dbUser.getRole());
             LoginResponse res= new LoginResponse();
             res.setCode(StatusCode.SUCCESS.getCode());
-            res.setRole(dbUser.getRole());
+            res.setRole(Role.ROLE_OWNER);
             res.setToken(userAuthenticationProvider.createToken(userName,
-                    dbUser.getRole()));
+                    Role.ROLE_OWNER));
             res.setTokenType(SecurityConstants.TOKEN_PREFIX.strip());
             res.setExpiredTime(SecurityConstants.EXPIRATION_TIME);
             return ResponseEntity.ok(res);
@@ -69,10 +70,10 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<User> signUp(User user) throws ErrorDto {
-        if (!userRepository.existsByUsername(user.getUsername())) {
-            userRepository.save(user);
-            return new ResponseEntity<User>(user, HttpStatus.CREATED);
+    public ResponseEntity<Owner> signUp(Owner owner) throws ErrorDto {
+        if (!ownerRepository.existsByUsername(owner.getUsername())) {
+            ownerRepository.save(owner);
+            return new ResponseEntity<Owner>(owner, HttpStatus.CREATED);
         } else {
             throw new ErrorDto("Tài khoản này đã tồn tại");
         }

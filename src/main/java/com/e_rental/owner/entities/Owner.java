@@ -18,13 +18,13 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "users")
-public class User {
+@Entity(name = "owners")
+public class Owner {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "username")
     private String username;
@@ -35,8 +35,11 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "user_role")
-    private Role role;
+    @Column(name = "email_verified", nullable = false)
+    private Boolean emailVerified = false;
+
+    @Column(name = "has_info")
+    private Boolean hasInfo = false;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -49,5 +52,8 @@ public class User {
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
+
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
+    private OwnerInfo info;
 
 }
