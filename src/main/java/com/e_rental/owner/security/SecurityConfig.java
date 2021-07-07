@@ -4,16 +4,19 @@ import com.e_rental.owner.security.OAuth2.HttpCookieOAuth2AuthorizationRequestRe
 import com.e_rental.owner.security.OAuth2.OAuth2AuthenticationFailureHandler;
 import com.e_rental.owner.security.OAuth2.OAuth2AuthenticationSuccessHandler;
 import com.e_rental.owner.services.CustomOAuth2UserService;
-import com.e_rental.owner.services.UserDetailsService;
+import com.e_rental.owner.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -40,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserAuthenticationProvider userAuthenticationProvider;
 
     @Autowired
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Autowired
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -57,24 +60,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public SecurityConfig(UserAuthenticationEntryPoint userAuthenticationEntryPoint,
                           UserAuthenticationProvider userAuthenticationProvider,
-                          UserDetailsService userDetailsService,
+                          CustomUserDetailsService customUserDetailsService,
                           CustomOAuth2UserService customOAuth2UserService,
                           HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository,
                           OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
                           OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler) {
         this.userAuthenticationEntryPoint = userAuthenticationEntryPoint;
         this.userAuthenticationProvider = userAuthenticationProvider;
-        this.userDetailsService = userDetailsService;
+        this.customUserDetailsService = customUserDetailsService;
         this.customOAuth2UserService = customOAuth2UserService;
         this.httpCookieOAuth2AuthorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository;
         this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
         this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
     }
 
+    @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+                .userDetailsService(customUserDetailsService)
+                .passwordEncoder(passwordEncoder());
+    }
 
     @Bean
     public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
         return new HttpCookieOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -113,7 +127,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .successHandler(oAuth2AuthenticationSuccessHandler)
             .failureHandler(oAuth2AuthenticationFailureHandler);
 
-        http.addFilterBefore(new JwtAuthFilter(userAuthenticationProvider, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthFilter(userAuthenticationProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
 
     }
 }

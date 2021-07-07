@@ -14,14 +14,15 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "owner_info")
+@Entity
+@Table(name = "owner_info")
 public class OwnerInfo {
     @Id
-    @Column(name = "owner_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne()
-    @PrimaryKeyJoinColumn
+    @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
     @Column(name = "first_name")
@@ -37,7 +38,7 @@ public class OwnerInfo {
     private Integer provinceId;
 
     @Column(name = "address")
-    private Integer address;
+    private String address;
 
     @Column(name = "created_at")
     @CreationTimestamp

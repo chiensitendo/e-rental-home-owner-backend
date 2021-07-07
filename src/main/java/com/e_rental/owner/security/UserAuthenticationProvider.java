@@ -4,7 +4,6 @@ import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.entities.Owner;
 import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.repositories.OwnerRepository;
-import com.e_rental.owner.security.dto.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -25,9 +24,6 @@ public class UserAuthenticationProvider {
 
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
-
-    @Value("app.oauth2.authorizedRedirectUris")
-    private List<String> authorizedRedirectUris;
 
     private final OwnerRepository ownerRepository;
 

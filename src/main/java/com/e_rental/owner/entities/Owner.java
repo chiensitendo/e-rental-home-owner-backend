@@ -18,7 +18,8 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "owners")
+@Entity
+@Table(name = "owners")
 public class Owner {
 
     @Id
@@ -53,7 +54,7 @@ public class Owner {
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
-    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private OwnerInfo info;
 
 }

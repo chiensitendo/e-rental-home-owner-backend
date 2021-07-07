@@ -2,12 +2,11 @@ package com.e_rental.owner.services;
 
 import com.e_rental.owner.entities.Owner;
 import com.e_rental.owner.enums.AuthProvider;
-import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.handling.OAuth2AuthenticationProcessingException;
 import com.e_rental.owner.repositories.OwnerRepository;
 import com.e_rental.owner.security.OAuth2.user.OAuth2UserInfo;
 import com.e_rental.owner.security.OAuth2.user.OAuth2UserInfoFactory;
-import com.e_rental.owner.security.dto.UserPrincipal;
+import com.e_rental.owner.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -66,7 +65,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Owner owner = new Owner();
         owner.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
         owner.setEmail(oAuth2UserInfo.getEmail());
-        owner.setUsername(oAuth2UserInfo.getEmail());
+        owner.setUsername(oAuth2UserInfo.getAttributes().get("name").toString());
+        owner.setEmailVerified((Boolean) oAuth2UserInfo.getAttributes().get("email_verified"));
+        owner.setHasInfo(false);
         return ownerRepository.save(owner);
     }
 
