@@ -26,7 +26,6 @@ public class OwnerController {
     private final UserService userService;
 
     @GetMapping()
-    @ResponseBody
     public ResponseEntity<List<UserListResponse>> getAll() {
         return userService.getAll();
     }

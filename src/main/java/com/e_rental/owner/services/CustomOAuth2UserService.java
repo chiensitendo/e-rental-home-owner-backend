@@ -58,7 +58,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } else {
             owner = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
         }
-        return UserPrincipal.create(owner, oAuth2User.getAttributes());
+        return UserPrincipal.create(owner);
     }
 
     private Owner registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {

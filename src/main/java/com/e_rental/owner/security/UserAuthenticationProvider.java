@@ -48,22 +48,6 @@ public class UserAuthenticationProvider {
                 .compact();
     }
 
-
-    public String createToken(Authentication authentication){
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + SecurityConstants.EXPIRATION_TIME);
-
-        return Jwts.builder()
-                .setSubject(Long.toString(userPrincipal.getId()))
-                .setIssuedAt(new Date())
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
-
-    }
-
     public String resolveToken(HttpServletRequest httpServletRequest) {
         String bearerToken = httpServletRequest.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -72,24 +56,18 @@ public class UserAuthenticationProvider {
         return null;
     }
 
-//    public Authentication validateToken(String token) {
-//        String userName = getUsername(token);
-//        UserDetails userDetails = userDetailsServicel.loadUserByUsername(userName);
-//        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//    }
-
     public boolean validateToken(String token) {
         Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
         return true;
     }
 
     public String getUsername(String token) {
-        return (String) Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("userName");
+        return (String) Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     public Authentication validateUser(LoginRequest user) {
         String userName = user.getUsername();
-        Optional<Owner> optionalUser = ownerRepository.findByUsername(userName);
+        Optional<Owner> optionalUser = ownerRepository.findByEmail(userName);
         Owner item = optionalUser.get();
         if (user.getPassword().equals(item.getPassword())) {
             return new UsernamePasswordAuthenticationToken(item, null, Collections.emptyList());

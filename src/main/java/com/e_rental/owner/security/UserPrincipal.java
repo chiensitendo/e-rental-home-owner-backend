@@ -45,13 +45,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         );
     }
 
-    public static UserPrincipal create(Owner owner, Map<String, Object> attributes) {
-        UserPrincipal userPrincipal = UserPrincipal.create(owner);
-        userPrincipal.setAttributes(attributes);
-        return userPrincipal;
-    }
-
-
     @Override
     public String getPassword() {
         return password;

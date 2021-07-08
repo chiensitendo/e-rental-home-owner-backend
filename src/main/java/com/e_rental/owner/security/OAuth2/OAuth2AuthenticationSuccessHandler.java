@@ -1,7 +1,9 @@
 package com.e_rental.owner.security.OAuth2;
 
+import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.handling.BadRequestException;
 import com.e_rental.owner.security.UserAuthenticationProvider;
+import com.e_rental.owner.security.UserPrincipal;
 import com.e_rental.owner.utils.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -54,7 +56,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         String targetUrl = redirecUri.orElse(getDefaultTargetUrl());
 
-        String token = userAuthenticationProvider.createToken(authentication);
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        String token = userAuthenticationProvider.createToken(userPrincipal.getUsername(), Role.ROLE_OWNER);
+
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)
