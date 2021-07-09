@@ -1,6 +1,5 @@
 package com.e_rental.owner.controllers;
 
-import com.e_rental.owner.responses.UserListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
