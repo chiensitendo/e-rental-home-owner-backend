@@ -33,9 +33,11 @@ public class UserAuthenticationProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(String userName, Role role) {
-        Claims claims = Jwts.claims().setSubject(userName);
-        claims.put("auth", role);
+    public String createToken(UserPrincipal userPrincipal) {
+        Claims claims = Jwts.claims().setSubject(userPrincipal.getUsername());
+        claims.put("role", userPrincipal.getAuthorities());
+        claims.put("email", userPrincipal.getEmail());
+        claims.put("username", userPrincipal.getUsername());
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + SecurityConstants.EXPIRATION_TIME);
@@ -61,13 +63,13 @@ public class UserAuthenticationProvider {
         return true;
     }
 
-    public String getUsername(String token) {
+    public String getUsernameOrEmail(String token) {
         return (String) Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     public Authentication validateUser(LoginRequest user) {
-        String userName = user.getUsername();
-        Optional<Owner> optionalUser = ownerRepository.findByEmail(userName);
+        String usernameOrEmail = user.getLoginId();
+        Optional<Owner> optionalUser = ownerRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
         Owner item = optionalUser.get();
         if (user.getPassword().equals(item.getPassword())) {
             return new UsernamePasswordAuthenticationToken(item, null, Collections.emptyList());

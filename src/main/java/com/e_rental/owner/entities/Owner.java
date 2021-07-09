@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "owners")
-public class Owner {
+public class Owner extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,14 +41,6 @@ public class Owner {
 
     @Column(name = "has_info")
     private Boolean hasInfo = false;
-
-    @Column(name = "created_at")
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     @NotNull
     @Enumerated(EnumType.STRING)

@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class SignUpRequest {
-
     private String email;
     private String username;
     private String password;
@@ -15,5 +14,4 @@ public class SignUpRequest {
     private Integer gender;
     private Integer provinceId;
     private String address;
-
 }

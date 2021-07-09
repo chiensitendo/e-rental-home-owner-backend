@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "owner_info")
-public class OwnerInfo {
+public class OwnerInfo extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,13 +39,5 @@ public class OwnerInfo {
 
     @Column(name = "address")
     private String address;
-
-    @Column(name = "created_at")
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
 }

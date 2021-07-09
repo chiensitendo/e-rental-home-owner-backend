@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class LoginRequest {
-    private String username;
+    private String loginId;
     private String password;
 }

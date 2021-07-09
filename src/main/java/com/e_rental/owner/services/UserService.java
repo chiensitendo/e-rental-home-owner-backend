@@ -14,6 +14,7 @@ import com.e_rental.owner.dto.responses.LoginResponse;
 import com.e_rental.owner.dto.responses.UserListResponse;
 import com.e_rental.owner.security.SecurityConstants;
 import com.e_rental.owner.security.UserAuthenticationProvider;
+import com.e_rental.owner.security.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,23 +62,23 @@ public class UserService {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<LoginResponse> signIn(LoginRequest user) throws ErrorDto {
+    public ResponseEntity<LoginResponse> signIn(LoginRequest loginRequest) throws ErrorDto {
         try {
-            Authentication auth = authenticationManager.authenticate(
+            Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            user.getUsername(),
-                            user.getPassword()
+                            loginRequest.getLoginId(),
+                            loginRequest.getPassword()
                     )
             );
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
-            String userName = user.getUsername();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
             LoginResponse res= new LoginResponse();
             res.setCode(StatusCode.SUCCESS.getCode());
             res.setRole(Role.ROLE_OWNER);
-            res.setToken(userAuthenticationProvider.createToken(userName, Role.ROLE_OWNER));
+            res.setToken(userAuthenticationProvider.createToken(userPrincipal));
             res.setTokenType(SecurityConstants.TOKEN_PREFIX.strip());
             res.setExpiredTime(SecurityConstants.EXPIRATION_TIME);
 
