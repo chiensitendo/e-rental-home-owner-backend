@@ -1,8 +1,11 @@
-package com.e_rental.owner.security;
+package com.e_rental.owner.config;
 
+import com.e_rental.owner.security.JwtAuthFilter;
 import com.e_rental.owner.security.OAuth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.e_rental.owner.security.OAuth2.OAuth2AuthenticationFailureHandler;
 import com.e_rental.owner.security.OAuth2.OAuth2AuthenticationSuccessHandler;
+import com.e_rental.owner.security.UserAuthenticationEntryPoint;
+import com.e_rental.owner.security.UserAuthenticationProvider;
 import com.e_rental.owner.services.CustomOAuth2UserService;
 import com.e_rental.owner.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
