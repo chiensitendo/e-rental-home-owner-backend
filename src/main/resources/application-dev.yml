@@ -1,11 +1,11 @@
 server:
   port: 8081
-security.jwt.token.secret-key: my-secret-key
+security.jwt.token.secret-key: ${SECRET_KEY}
 spring:
   datasource:
-    url: jdbc:postgresql://ec2-54-225-228-142.compute-1.amazonaws.com/d4f9261pss7cr3
-    username: bktboyjgyeviub
-    password: beacaa98a0ccda6676c60710f8503bd245d293b2002c93d760aacbdea5ce5492
+    url: jdbc:postgresql://${DEV_DATABASE_URL}
+    username: ${DEV_DATABASE_USERNAME}
+    password: ${DEV_DATABASE_PASSWORD}
   jpa:
     show-sql: true
     hibernate:
