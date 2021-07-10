@@ -1,9 +1,9 @@
 security.jwt.token.secret-key: my-secret-key
 spring:
   datasource:
-    url: jdbc:postgresql://ec2-54-225-228-142.compute-1.amazonaws.com/d4f9261pss7cr3
-    username: bktboyjgyeviub
-    password: beacaa98a0ccda6676c60710f8503bd245d293b2002c93d760aacbdea5ce5492
+    url: jdbc:postgresql://ec2-34-232-191-133.compute-1.amazonaws.com/d1q343dg4iutnc
+    username: fxfcwjsuqcddtm
+    password: a433ba4ee22f9b5c60413b0a412d8a576a9e726379d209e2b01420093db0b233
   jpa:
     show-sql: true
     hibernate:
