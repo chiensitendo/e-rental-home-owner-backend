@@ -2,8 +2,10 @@ package com.e_rental.owner.security;
 
 import com.e_rental.owner.enums.StatusCode;
 import com.e_rental.owner.dto.responses.Response;
+import com.e_rental.owner.utils.MessageSourceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -21,6 +23,9 @@ public class UserAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    @Autowired
+    private MessageSourceUtil messageSourceUtil;
+
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
@@ -30,7 +35,7 @@ public class UserAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setCharacterEncoding("UTF-8");
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         Response res = new Response();
-        res.setMessage("Access Denied !");
+        res.setMessage(messageSourceUtil.getMessage("access.deny"));
         res.setCode(StatusCode.ACCESS_DENY.getCode());
         PrintWriter out = response.getWriter();
         String body = ow.writeValueAsString(res);
