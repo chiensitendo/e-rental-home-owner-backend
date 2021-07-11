@@ -3,12 +3,11 @@ package com.e_rental.owner.controllers;
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.dto.request.SignUpRequest;
+import com.e_rental.owner.dto.request.UpdateRequest;
 import com.e_rental.owner.dto.responses.OwnerResponse;
-import com.e_rental.owner.entities.Owner;
 import com.e_rental.owner.dto.responses.LoginResponse;
 import com.e_rental.owner.dto.responses.UserListResponse;
 import com.e_rental.owner.services.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,4 +38,10 @@ public class OwnerController {
     public ResponseEntity<OwnerResponse> signUp(@Valid @RequestBody SignUpRequest signUpRequest) throws ErrorDto {
         return userService.signUp(signUpRequest);
     }
+
+    @PutMapping("/owner/{id}")
+    public ResponseEntity<Object> updateOwnerInfo(@PathVariable("id") long id, @RequestBody UpdateRequest updateRequest){
+        return userService.updateOwnerInfo(id, updateRequest);
+    }
+
 }
