@@ -15,8 +15,10 @@ import com.e_rental.owner.dto.responses.UserListResponse;
 import com.e_rental.owner.security.SecurityConstants;
 import com.e_rental.owner.security.UserAuthenticationProvider;
 import com.e_rental.owner.security.UserPrincipal;
+import com.e_rental.owner.utils.MessageSourceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,6 +54,9 @@ public class UserService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private MessageSourceUtil messageSourceUtil;
+
     public ResponseEntity<List<UserListResponse>> getAll() {
         List<Owner> ownerList = ownerRepository.findAll();
         List<UserListResponse> response = ownerList.stream().map(user -> {
@@ -85,7 +90,7 @@ public class UserService {
             return ResponseEntity.ok(res);
 
         } catch (AuthenticationException e) {
-            throw new ErrorDto("Tên tài khoản hoặc Mật khẩu không đúng !");
+            throw new ErrorDto(messageSourceUtil.getMessage("account.error"));
         }
     }
 
@@ -95,7 +100,7 @@ public class UserService {
         //TODO: Add validate signUpRequest
 
         if (ownerRepository.existsByUsername(signUpRequest.getUsername())) {
-            throw new ErrorDto("Tài khoản này đã tồn tại");
+            throw new ErrorDto(messageSourceUtil.getMessage("account.exist"));
         }
 
         Owner owner = objectMapper.convertValue(signUpRequest, Owner.class);
