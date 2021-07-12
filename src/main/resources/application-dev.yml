@@ -1,6 +1,6 @@
 server:
   port: 8081
-security.jwt.token.secret-key: tcejorp-latner-e-yek-terces-prods
+security.jwt.token.secret-key: ${SECRET_KEY}
 spring:
   datasource:
     url: jdbc:postgresql://${DEV_DATABASE_URL}
