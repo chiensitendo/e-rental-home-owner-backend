@@ -14,6 +14,9 @@ import lombok.Setter;
 public class LoginResponse extends Response {
 
     @JsonProperty
+    Long id;
+
+    @JsonProperty
     String token;
 
     @JsonProperty

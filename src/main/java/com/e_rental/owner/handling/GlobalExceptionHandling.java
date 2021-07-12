@@ -18,4 +18,18 @@ public class GlobalExceptionHandling extends ExceptionHandlerExceptionResolver {
         res.setMessage(err.getMessage());
         return ResponseEntity.badRequest().body(res);
     }
+    @ExceptionHandler(OwnerNotFoundException.class)
+    private ResponseEntity<? extends Response> processErrorDto(OwnerNotFoundException err) {
+        Response res = new Response();
+        res.setCode(StatusCode.NOT_FOUND.getCode());
+        res.setMessage(err.getMessage());
+        return ResponseEntity.notFound().build();
+    }
+    @ExceptionHandler(InternationalErrorException.class)
+    private ResponseEntity<? extends Response> processErrorDto(InternationalErrorException err) {
+        Response res = new Response();
+        res.setCode(StatusCode.INTERNATIONAL_ERROR.getCode());
+        res.setMessage(err.getMessage());
+        return ResponseEntity.internalServerError().body(res);
+    }
 }

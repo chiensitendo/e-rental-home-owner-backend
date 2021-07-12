@@ -11,6 +11,7 @@ import com.e_rental.owner.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,8 +40,8 @@ public class OwnerController {
         return userService.signUp(signUpRequest);
     }
 
-    @PutMapping("/owner/{id}")
-    public ResponseEntity<Object> updateOwnerInfo(@PathVariable("id") long id, @RequestBody UpdateRequest updateRequest){
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateOwnerInfo(@PathVariable("id") long id, @Validated @RequestBody UpdateRequest updateRequest) throws Exception{
         return userService.updateOwnerInfo(id, updateRequest);
     }
 

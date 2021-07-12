@@ -1,32 +1,35 @@
-package com.e_rental.owner.dto.request;
+package com.e_rental.owner.dto.responses;
 
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.Column;
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserInfoResponse extends  Response{
 
-@Data
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class UpdateRequest {
+    @JsonProperty(value = "id")
+    private Long id;
+
+    @JsonProperty(value = "ownerId")
+    private Long ownerId;
+
     @JsonProperty(value = "firstName")
-    @Column(name = "first_name")
     private String firstName;
 
     @JsonProperty(value = "lastName")
-    @Column(name = "last_name")
     private String lastName;
 
     @JsonProperty(value = "gender")
-    @Column(name = "gender")
     private Integer gender;
 
     @JsonProperty(value = "provinceId")
-    @Column(name = "province_id")
     private Integer provinceId;
 
     @JsonProperty(value = "address")
-    @Column(name = "address")
     private String address;
 }
