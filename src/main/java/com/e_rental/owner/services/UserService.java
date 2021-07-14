@@ -3,11 +3,16 @@ package com.e_rental.owner.services;
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.dto.request.SignUpRequest;
+import com.e_rental.owner.dto.request.UpdateRequest;
 import com.e_rental.owner.dto.responses.OwnerResponse;
+import com.e_rental.owner.dto.responses.UserInfoResponse;
 import com.e_rental.owner.entities.Owner;
 import com.e_rental.owner.entities.OwnerInfo;
 import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.enums.StatusCode;
+import com.e_rental.owner.handling.InternationalErrorException;
+import com.e_rental.owner.handling.OwnerNotFoundException;
+import com.e_rental.owner.mappers.OwnerInfoMapper;
 import com.e_rental.owner.repositories.OwnerInfoRepository;
 import com.e_rental.owner.repositories.OwnerRepository;
 import com.e_rental.owner.dto.responses.LoginResponse;
@@ -18,7 +23,6 @@ import com.e_rental.owner.security.UserPrincipal;
 import com.e_rental.owner.utils.MessageSourceUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,8 +33,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,6 +63,9 @@ public class UserService {
     @Autowired
     private MessageSourceUtil messageSourceUtil;
 
+    @Autowired
+    private OwnerInfoMapper ownerInfoMapper;
+
     public ResponseEntity<List<UserListResponse>> getAll() {
         List<Owner> ownerList = ownerRepository.findAll();
         List<UserListResponse> response = ownerList.stream().map(user -> {
@@ -80,7 +89,8 @@ public class UserService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            LoginResponse res= new LoginResponse();
+            LoginResponse res = new LoginResponse();
+            res.setId(userPrincipal.getId());
             res.setCode(StatusCode.SUCCESS.getCode());
             res.setRole(Role.ROLE_OWNER);
             res.setToken(userAuthenticationProvider.createToken(userPrincipal));
@@ -130,5 +140,46 @@ public class UserService {
         ownerResponse.setAddress(ownerInfo.getAddress());
 
         return new ResponseEntity<OwnerResponse>(ownerResponse, HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<Object> updateOwnerInfo(long id, UpdateRequest updateRequest) throws Exception {
+        try {
+            Owner owner = Optional.of(ownerRepository.getById(id))
+                    .orElseThrow();
+            Long infoId = null;
+            if (owner.getHasInfo() == false) {
+                // create new info
+                OwnerInfo ownerInfo = ownerInfoMapper.toOwnerInfo(updateRequest);
+                owner.setInfo(ownerInfo);
+                ownerInfo.setOwner(owner);
+                ownerRepository.save(owner);
+                infoId = ownerInfo.getId();
+            } else {
+                // update existing info
+                OwnerInfo ownerInfo = owner.getInfo();
+                ownerInfoMapper.updateOwnerInfo(updateRequest, ownerInfo);
+                owner.setInfo(ownerInfo);
+                ownerRepository.save(owner);
+                infoId = ownerInfo.getId();
+            }
+            UserInfoResponse res = new UserInfoResponse();
+            res.setCode(StatusCode.SUCCESS.getCode());
+            res.setMessage(messageSourceUtil.getMessage("account.info.update.success"));
+            if(updateRequest != null){
+                res.setGender(updateRequest.getGender());
+                res.setAddress(updateRequest.getAddress());
+                res.setOwnerId(owner.getId());
+                res.setId(infoId);
+                res.setProvinceId(updateRequest.getProvinceId());
+                res.setFirstName(updateRequest.getFirstName());
+                res.setLastName(updateRequest.getLastName());
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(res);
+        } catch (EntityNotFoundException ee) {
+            throw new OwnerNotFoundException(messageSourceUtil.getMessage("account.notExist"));
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new InternationalErrorException(messageSourceUtil.getMessage("error.server"));
+        }
     }
 }

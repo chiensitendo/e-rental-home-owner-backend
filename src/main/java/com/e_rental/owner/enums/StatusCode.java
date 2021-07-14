@@ -3,7 +3,9 @@ package com.e_rental.owner.enums;
 public enum StatusCode {
     BAD_REQUEST("BAD_REQUEST"),
     ACCESS_DENY("ACCESS_DENY"),
-    SUCCESS("SUCCESS");
+    NOT_FOUND("NOT_FOUND"),
+    SUCCESS("SUCCESS"),
+    INTERNATIONAL_ERROR("INTERNATIONAL_ERROR");
 
     private String value;
 
