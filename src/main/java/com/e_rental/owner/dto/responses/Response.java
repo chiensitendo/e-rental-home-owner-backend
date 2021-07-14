@@ -16,5 +16,4 @@ public class Response {
 
     @JsonProperty
     String message;
-
 }
