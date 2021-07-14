@@ -3,20 +3,20 @@ package com.e_rental.owner.services;
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.dto.request.SignUpRequest;
-import com.e_rental.owner.dto.request.UpdateRequest;
+import com.e_rental.owner.dto.request.UpdateOwnerRequest;
 import com.e_rental.owner.dto.responses.OwnerResponse;
-import com.e_rental.owner.dto.responses.UserInfoResponse;
+import com.e_rental.owner.dto.responses.OwnerInfoResponse;
 import com.e_rental.owner.entities.Owner;
 import com.e_rental.owner.entities.OwnerInfo;
 import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.enums.StatusCode;
 import com.e_rental.owner.handling.InternationalErrorException;
-import com.e_rental.owner.handling.OwnerNotFoundException;
+import com.e_rental.owner.handling.ResourceNotFoundException;
 import com.e_rental.owner.mappers.OwnerInfoMapper;
 import com.e_rental.owner.repositories.OwnerInfoRepository;
 import com.e_rental.owner.repositories.OwnerRepository;
 import com.e_rental.owner.dto.responses.LoginResponse;
-import com.e_rental.owner.dto.responses.UserListResponse;
+import com.e_rental.owner.dto.responses.OwnerListResponse;
 import com.e_rental.owner.security.SecurityConstants;
 import com.e_rental.owner.security.UserAuthenticationProvider;
 import com.e_rental.owner.security.UserPrincipal;
@@ -66,10 +66,10 @@ public class UserService {
     @Autowired
     private OwnerInfoMapper ownerInfoMapper;
 
-    public ResponseEntity<List<UserListResponse>> getAll() {
+    public ResponseEntity<List<OwnerListResponse>> getAll() {
         List<Owner> ownerList = ownerRepository.findAll();
-        List<UserListResponse> response = ownerList.stream().map(user -> {
-            UserListResponse res = new UserListResponse();
+        List<OwnerListResponse> response = ownerList.stream().map(user -> {
+            OwnerListResponse res = new OwnerListResponse();
             res.name = user.getUsername();
             return res;
         }).collect(Collectors.toList());
@@ -142,14 +142,14 @@ public class UserService {
         return new ResponseEntity<OwnerResponse>(ownerResponse, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<Object> updateOwnerInfo(long id, UpdateRequest updateRequest) throws Exception {
+    public ResponseEntity<Object> updateOwnerInfo(long id, UpdateOwnerRequest updateOwnerRequest) throws Exception {
         try {
             Owner owner = Optional.of(ownerRepository.getById(id))
                     .orElseThrow();
             Long infoId = null;
             if (owner.getHasInfo() == false) {
                 // create new info
-                OwnerInfo ownerInfo = ownerInfoMapper.toOwnerInfo(updateRequest);
+                OwnerInfo ownerInfo = ownerInfoMapper.toOwnerInfo(updateOwnerRequest);
                 owner.setInfo(ownerInfo);
                 ownerInfo.setOwner(owner);
                 ownerRepository.save(owner);
@@ -157,26 +157,26 @@ public class UserService {
             } else {
                 // update existing info
                 OwnerInfo ownerInfo = owner.getInfo();
-                ownerInfoMapper.updateOwnerInfo(updateRequest, ownerInfo);
+                ownerInfoMapper.updateOwnerInfo(updateOwnerRequest, ownerInfo);
                 owner.setInfo(ownerInfo);
                 ownerRepository.save(owner);
                 infoId = ownerInfo.getId();
             }
-            UserInfoResponse res = new UserInfoResponse();
+            OwnerInfoResponse res = new OwnerInfoResponse();
             res.setCode(StatusCode.SUCCESS.getCode());
             res.setMessage(messageSourceUtil.getMessage("account.info.update.success"));
-            if(updateRequest != null){
-                res.setGender(updateRequest.getGender());
-                res.setAddress(updateRequest.getAddress());
+            if(updateOwnerRequest != null){
+                res.setGender(updateOwnerRequest.getGender());
+                res.setAddress(updateOwnerRequest.getAddress());
                 res.setOwnerId(owner.getId());
                 res.setId(infoId);
-                res.setProvinceId(updateRequest.getProvinceId());
-                res.setFirstName(updateRequest.getFirstName());
-                res.setLastName(updateRequest.getLastName());
+                res.setProvinceId(updateOwnerRequest.getProvinceId());
+                res.setFirstName(updateOwnerRequest.getFirstName());
+                res.setLastName(updateOwnerRequest.getLastName());
             }
             return ResponseEntity.status(HttpStatus.OK).body(res);
         } catch (EntityNotFoundException ee) {
-            throw new OwnerNotFoundException(messageSourceUtil.getMessage("account.notExist"));
+            throw new ResourceNotFoundException(messageSourceUtil.getMessage("account.notExist"));
         } catch (Exception e){
             e.printStackTrace();
             throw new InternationalErrorException(messageSourceUtil.getMessage("error.server"));

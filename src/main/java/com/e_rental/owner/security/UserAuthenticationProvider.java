@@ -39,6 +39,8 @@ public class UserAuthenticationProvider {
 
     public String createToken(UserPrincipal userPrincipal) {
         Claims claims = Jwts.claims().setSubject(userPrincipal.getUsername());
+        claims.put("id", userPrincipal.getId());
+        claims.put("tokenType", "Bearer");
         claims.put("role", userPrincipal.getAuthorities());
         claims.put("email", userPrincipal.getEmail());
         claims.put("username", userPrincipal.getUsername());

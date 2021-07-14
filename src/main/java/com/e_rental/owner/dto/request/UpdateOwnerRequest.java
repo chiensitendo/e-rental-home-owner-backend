@@ -9,7 +9,7 @@ import javax.persistence.Column;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class UpdateRequest {
+public class UpdateOwnerRequest {
     @JsonProperty(value = "firstName")
     @Column(name = "first_name")
     private String firstName;

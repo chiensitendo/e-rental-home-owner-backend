@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInfoResponse extends  Response{
+public class OwnerInfoResponse extends  Response{
 
     @JsonProperty(value = "id")
     private Long id;
