@@ -1,22 +1,23 @@
 package com.e_rental.owner.services;
 
 import com.e_rental.owner.dto.ErrorDto;
+import com.e_rental.owner.dto.request.CreateBuildingRequest;
 import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.dto.request.SignUpRequest;
 import com.e_rental.owner.dto.request.UpdateOwnerRequest;
-import com.e_rental.owner.dto.responses.OwnerResponse;
-import com.e_rental.owner.dto.responses.OwnerInfoResponse;
-import com.e_rental.owner.entities.Owner;
-import com.e_rental.owner.entities.OwnerInfo;
+import com.e_rental.owner.dto.responses.*;
+import com.e_rental.owner.entities.BuildingEntity;
+import com.e_rental.owner.entities.OwnerEntity;
+import com.e_rental.owner.entities.OwnerInfoEntity;
 import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.enums.StatusCode;
 import com.e_rental.owner.handling.InternationalErrorException;
 import com.e_rental.owner.handling.ResourceNotFoundException;
+import com.e_rental.owner.mappers.BuildingMapper;
 import com.e_rental.owner.mappers.OwnerInfoMapper;
+import com.e_rental.owner.repositories.BuildingRepository;
 import com.e_rental.owner.repositories.OwnerInfoRepository;
 import com.e_rental.owner.repositories.OwnerRepository;
-import com.e_rental.owner.dto.responses.LoginResponse;
-import com.e_rental.owner.dto.responses.OwnerListResponse;
 import com.e_rental.owner.security.SecurityConstants;
 import com.e_rental.owner.security.UserAuthenticationProvider;
 import com.e_rental.owner.security.UserPrincipal;
@@ -46,6 +47,9 @@ public class UserService {
     private OwnerRepository ownerRepository;
 
     @Autowired
+    private BuildingRepository buildingRepository;
+
+    @Autowired
     private OwnerInfoRepository ownerInfoRepository;
 
     @Autowired
@@ -63,12 +67,11 @@ public class UserService {
     @Autowired
     private MessageSourceUtil messageSourceUtil;
 
-    @Autowired
     private OwnerInfoMapper ownerInfoMapper;
 
     public ResponseEntity<List<OwnerListResponse>> getAll() {
-        List<Owner> ownerList = ownerRepository.findAll();
-        List<OwnerListResponse> response = ownerList.stream().map(user -> {
+        List<OwnerEntity> ownerEntityList = ownerRepository.findAll();
+        List<OwnerListResponse> response = ownerEntityList.stream().map(user -> {
             OwnerListResponse res = new OwnerListResponse();
             res.name = user.getUsername();
             return res;
@@ -113,54 +116,54 @@ public class UserService {
             throw new ErrorDto(messageSourceUtil.getMessage("account.exist"));
         }
 
-        Owner owner = objectMapper.convertValue(signUpRequest, Owner.class);
-        owner.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        OwnerEntity ownerEntity = objectMapper.convertValue(signUpRequest, OwnerEntity.class);
+        ownerEntity.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 
         // Create ownerInfo
-        OwnerInfo ownerInfo = new OwnerInfo();
-        ownerInfo.setGender(signUpRequest.getGender());
-        ownerInfo.setFirstName(signUpRequest.getFirstName());
-        ownerInfo.setLastName(signUpRequest.getLastName());
-        ownerInfo.setAddress(signUpRequest.getAddress());
-        ownerInfo.setProvinceId(signUpRequest.getProvinceId());
+        OwnerInfoEntity ownerInfoEntity = new OwnerInfoEntity();
+        ownerInfoEntity.setGender(signUpRequest.getGender());
+        ownerInfoEntity.setFirstName(signUpRequest.getFirstName());
+        ownerInfoEntity.setLastName(signUpRequest.getLastName());
+        ownerInfoEntity.setAddress(signUpRequest.getAddress());
+        ownerInfoEntity.setProvinceId(signUpRequest.getProvinceId());
 
-        owner.setInfo(ownerInfo);
-        owner.setHasInfo(true);
-        ownerInfo.setOwner(owner);
-        ownerRepository.save(owner);
+        ownerEntity.setInfo(ownerInfoEntity);
+        ownerEntity.setHasInfo(true);
+        ownerInfoEntity.setOwner(ownerEntity);
+        ownerRepository.save(ownerEntity);
 
         OwnerResponse ownerResponse = new OwnerResponse();
-        ownerResponse.setUsername(owner.getUsername());
-        ownerResponse.setPassword(owner.getPassword());
-        ownerResponse.setEmail(owner.getEmail());
-        ownerResponse.setFirstName(ownerInfo.getFirstName());
-        ownerResponse.setLastName(ownerInfo.getLastName());
-        ownerResponse.setGender(ownerInfo.getGender());
-        ownerResponse.setProvinceId(ownerInfo.getProvinceId());
-        ownerResponse.setAddress(ownerInfo.getAddress());
+        ownerResponse.setUsername(ownerEntity.getUsername());
+        ownerResponse.setPassword(ownerEntity.getPassword());
+        ownerResponse.setEmail(ownerEntity.getEmail());
+        ownerResponse.setFirstName(ownerInfoEntity.getFirstName());
+        ownerResponse.setLastName(ownerInfoEntity.getLastName());
+        ownerResponse.setGender(ownerInfoEntity.getGender());
+        ownerResponse.setProvinceId(ownerInfoEntity.getProvinceId());
+        ownerResponse.setAddress(ownerInfoEntity.getAddress());
 
         return new ResponseEntity<OwnerResponse>(ownerResponse, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<Object> updateOwnerInfo(long id, UpdateOwnerRequest updateOwnerRequest) throws Exception {
+    public ResponseEntity<Object> updateOwnerInfo(long ownerId, UpdateOwnerRequest updateOwnerRequest) throws Exception {
         try {
-            Owner owner = Optional.of(ownerRepository.getById(id))
-                    .orElseThrow();
+            OwnerEntity ownerEntity = ownerRepository.findById(ownerId).orElseThrow(ResourceNotFoundException::new);
+
             Long infoId = null;
-            if (owner.getHasInfo() == false) {
+            if (ownerEntity.getHasInfo() == false) {
                 // create new info
-                OwnerInfo ownerInfo = ownerInfoMapper.toOwnerInfo(updateOwnerRequest);
-                owner.setInfo(ownerInfo);
-                ownerInfo.setOwner(owner);
-                ownerRepository.save(owner);
-                infoId = ownerInfo.getId();
+                OwnerInfoEntity ownerInfoEntity = ownerInfoMapper.toOwnerInfo(updateOwnerRequest);
+                ownerEntity.setInfo(ownerInfoEntity);
+                ownerInfoEntity.setOwner(ownerEntity);
+                ownerRepository.save(ownerEntity);
+                infoId = ownerInfoEntity.getId();
             } else {
                 // update existing info
-                OwnerInfo ownerInfo = owner.getInfo();
-                ownerInfoMapper.updateOwnerInfo(updateOwnerRequest, ownerInfo);
-                owner.setInfo(ownerInfo);
-                ownerRepository.save(owner);
-                infoId = ownerInfo.getId();
+                OwnerInfoEntity ownerInfoEntity = ownerEntity.getInfo();
+                ownerInfoMapper.updateOwnerInfo(updateOwnerRequest, ownerInfoEntity);
+                ownerEntity.setInfo(ownerInfoEntity);
+                ownerRepository.save(ownerEntity);
+                infoId = ownerInfoEntity.getId();
             }
             OwnerInfoResponse res = new OwnerInfoResponse();
             res.setCode(StatusCode.SUCCESS.getCode());
@@ -168,7 +171,7 @@ public class UserService {
             if(updateOwnerRequest != null){
                 res.setGender(updateOwnerRequest.getGender());
                 res.setAddress(updateOwnerRequest.getAddress());
-                res.setOwnerId(owner.getId());
+                res.setOwnerId(ownerEntity.getId());
                 res.setId(infoId);
                 res.setProvinceId(updateOwnerRequest.getProvinceId());
                 res.setFirstName(updateOwnerRequest.getFirstName());
@@ -176,7 +179,24 @@ public class UserService {
             }
             return ResponseEntity.status(HttpStatus.OK).body(res);
         } catch (EntityNotFoundException ee) {
-            throw new ResourceNotFoundException(messageSourceUtil.getMessage("account.notExist"));
+            throw new ResourceNotFoundException(String.format(messageSourceUtil.getMessage("resource.notExist"), "Owner"));
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new InternationalErrorException(messageSourceUtil.getMessage("error.server"));
+        }
+    }
+
+    public ResponseEntity<Response> createBuilding(Long ownerId, CreateBuildingRequest createBuildingRequest) throws Exception {
+        try {
+            OwnerEntity ownerEntity = ownerRepository.findById(ownerId).orElseThrow(ResourceNotFoundException::new);
+
+            BuildingEntity buildingEntity = BuildingMapper.INSTANCE.toBuildingEntity(createBuildingRequest);
+            buildingEntity.setOwner(ownerEntity);
+
+            buildingRepository.save(buildingEntity);
+            return ResponseEntity.status(HttpStatus.OK).body(new Response());
+        } catch (ResourceNotFoundException ee) {
+            throw new ResourceNotFoundException(String.format(messageSourceUtil.getMessage("resource.notExist"), "Owner"));
         } catch (Exception e){
             e.printStackTrace();
             throw new InternationalErrorException(messageSourceUtil.getMessage("error.server"));

@@ -1,12 +1,14 @@
 package com.e_rental.owner.controllers;
 
 import com.e_rental.owner.dto.ErrorDto;
+import com.e_rental.owner.dto.request.CreateBuildingRequest;
 import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.dto.request.SignUpRequest;
 import com.e_rental.owner.dto.request.UpdateOwnerRequest;
 import com.e_rental.owner.dto.responses.OwnerResponse;
 import com.e_rental.owner.dto.responses.LoginResponse;
 import com.e_rental.owner.dto.responses.OwnerListResponse;
+import com.e_rental.owner.dto.responses.Response;
 import com.e_rental.owner.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +42,14 @@ public class OwnerController {
         return userService.signUp(signUpRequest);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateOwnerInfo(@PathVariable("id") long id, @Validated @RequestBody UpdateOwnerRequest updateOwnerRequest) throws Exception{
-        return userService.updateOwnerInfo(id, updateOwnerRequest);
+    @PutMapping("/{ownerId}")
+    public ResponseEntity<Object> updateOwnerInfo(@PathVariable("ownerId") long ownerId, @Validated @RequestBody UpdateOwnerRequest updateOwnerRequest) throws Exception{
+        return userService.updateOwnerInfo(ownerId, updateOwnerRequest);
+    }
+
+    @PostMapping("/{ownerId}/buildings")
+    public ResponseEntity<Response> createBuilding(@PathVariable("ownerId") long ownerId, @Valid @RequestBody CreateBuildingRequest createBuildingRequest) throws ErrorDto, Exception {
+        return userService.createBuilding(ownerId, createBuildingRequest);
     }
 
 }

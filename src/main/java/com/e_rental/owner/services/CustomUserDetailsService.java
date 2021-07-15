@@ -1,6 +1,6 @@
 package com.e_rental.owner.services;
 
-import com.e_rental.owner.entities.Owner;
+import com.e_rental.owner.entities.OwnerEntity;
 import com.e_rental.owner.repositories.OwnerRepository;
 import com.e_rental.owner.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        Optional<Owner> user = ownerRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+        Optional<OwnerEntity> user = ownerRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
         if (!user.isPresent()) {
             throw new UsernameNotFoundException("Login " + usernameOrEmail + " not found");
         }

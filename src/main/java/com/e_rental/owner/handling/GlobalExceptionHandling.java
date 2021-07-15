@@ -3,6 +3,7 @@ package com.e_rental.owner.handling;
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.enums.StatusCode;
 import com.e_rental.owner.dto.responses.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,7 +25,7 @@ public class GlobalExceptionHandling extends ExceptionHandlerExceptionResolver {
         Response res = new Response();
         res.setCode(StatusCode.NOT_FOUND.getCode());
         res.setMessage(err.getMessage());
-        return ResponseEntity.notFound().build();
+        return new ResponseEntity<Response>(res, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InternationalErrorException.class)

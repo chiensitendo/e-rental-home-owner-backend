@@ -1,6 +1,6 @@
 package com.e_rental.owner.security;
 
-import com.e_rental.owner.entities.Owner;
+import com.e_rental.owner.entities.OwnerEntity;
 import com.e_rental.owner.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,15 +27,15 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public static UserPrincipal create(Owner owner) {
+    public static UserPrincipal create(OwnerEntity ownerEntity) {
 
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_OWNER.name()));
 
         UserPrincipal userPrincipal = new UserPrincipal();
-        userPrincipal.setId(owner.getId());
-        userPrincipal.setUsername(owner.getUsername());
-        userPrincipal.setEmail(owner.getEmail());
-        userPrincipal.setPassword(owner.getPassword());
+        userPrincipal.setId(ownerEntity.getId());
+        userPrincipal.setUsername(ownerEntity.getUsername());
+        userPrincipal.setEmail(ownerEntity.getEmail());
+        userPrincipal.setPassword(ownerEntity.getPassword());
         userPrincipal.setAuthorities(authorities);
 
         return userPrincipal;
