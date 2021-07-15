@@ -1,8 +1,7 @@
 package com.e_rental.owner.security;
 
 import com.e_rental.owner.dto.request.LoginRequest;
-import com.e_rental.owner.entities.Owner;
-import com.e_rental.owner.enums.Role;
+import com.e_rental.owner.entities.OwnerEntity;
 import com.e_rental.owner.repositories.OwnerRepository;
 import com.e_rental.owner.utils.MessageSourceUtil;
 import io.jsonwebtoken.Claims;
@@ -75,8 +74,8 @@ public class UserAuthenticationProvider {
 
     public Authentication validateUser(LoginRequest user) {
         String usernameOrEmail = user.getLoginId();
-        Optional<Owner> optionalUser = ownerRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
-        Owner item = optionalUser.get();
+        Optional<OwnerEntity> optionalUser = ownerRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+        OwnerEntity item = optionalUser.get();
         if (user.getPassword().equals(item.getPassword())) {
             return new UsernamePasswordAuthenticationToken(item, null, Collections.emptyList());
         } else {

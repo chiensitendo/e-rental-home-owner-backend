@@ -1,17 +1,14 @@
 package com.e_rental.owner.entities;
 
 import com.e_rental.owner.enums.AuthProvider;
-import com.e_rental.owner.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "owners")
-public class Owner extends BaseEntity{
+public class OwnerEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,6 +44,9 @@ public class Owner extends BaseEntity{
     private AuthProvider provider;
 
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private OwnerInfo info;
+    private OwnerInfoEntity info;
+
+    @OneToMany( mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BuildingEntity> buildings = new ArrayList<>();
 
 }

@@ -1,7 +1,7 @@
 package com.e_rental.owner.mappers;
 
 import com.e_rental.owner.dto.request.UpdateOwnerRequest;
-import com.e_rental.owner.entities.OwnerInfo;
+import com.e_rental.owner.entities.OwnerInfoEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 public interface OwnerInfoMapper {
     OwnerInfoMapper INSTANCE = Mappers.getMapper(OwnerInfoMapper.class);
 
-    OwnerInfo toOwnerInfo(UpdateOwnerRequest updateOwnerRequest);
+    OwnerInfoEntity toOwnerInfo(UpdateOwnerRequest updateOwnerRequest);
 
-    void updateOwnerInfo(UpdateOwnerRequest updateOwnerRequest, @MappingTarget OwnerInfo ownerInfo);
+    void updateOwnerInfo(UpdateOwnerRequest updateOwnerRequest, @MappingTarget OwnerInfoEntity ownerInfoEntity);
 }

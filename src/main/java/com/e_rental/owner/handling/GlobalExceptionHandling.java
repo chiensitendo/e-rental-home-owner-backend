@@ -3,6 +3,7 @@ package com.e_rental.owner.handling;
 import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.enums.StatusCode;
 import com.e_rental.owner.dto.responses.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,15 +21,23 @@ public class GlobalExceptionHandling extends ExceptionHandlerExceptionResolver {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    private ResponseEntity<? extends Response> processErrorDto(ResourceNotFoundException err) {
+    private ResponseEntity<? extends Response> processResourceNotFoundException(ResourceNotFoundException err) {
         Response res = new Response();
         res.setCode(StatusCode.NOT_FOUND.getCode());
         res.setMessage(err.getMessage());
-        return ResponseEntity.notFound().build();
+        return new ResponseEntity<Response>(res, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    private ResponseEntity<? extends Response> processForbiddenException(ForbiddenException err) {
+        Response res = new Response();
+        res.setCode(StatusCode.FORBIDDEN.getCode());
+        res.setMessage(err.getMessage());
+        return new ResponseEntity<Response>(res, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(InternationalErrorException.class)
-    private ResponseEntity<? extends Response> processErrorDto(InternationalErrorException err) {
+    private ResponseEntity<? extends Response> processInternationalErrorException(InternationalErrorException err) {
         Response res = new Response();
         res.setCode(StatusCode.INTERNATIONAL_ERROR.getCode());
         res.setMessage(err.getMessage());

@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,14 +13,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "owner_info")
-public class OwnerInfo extends BaseEntity {
+public class OwnerInfoEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne()
     @JoinColumn(name = "owner_id", nullable = false)
-    private Owner owner;
+    private OwnerEntity owner;
 
     @Column(name = "first_name")
     private String firstName;

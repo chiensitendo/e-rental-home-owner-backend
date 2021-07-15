@@ -1,6 +1,6 @@
 package com.e_rental.owner.services;
 
-import com.e_rental.owner.entities.Owner;
+import com.e_rental.owner.entities.OwnerEntity;
 import com.e_rental.owner.enums.AuthProvider;
 import com.e_rental.owner.handling.OAuth2AuthenticationProcessingException;
 import com.e_rental.owner.repositories.OwnerRepository;
@@ -45,34 +45,34 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if ((oAuth2UserInfo.getEmail()).isEmpty()) {
             throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 Provider");
         }
-        Optional<Owner> optionalUser = ownerRepository.findByUsernameOrEmail(oAuth2UserInfo.getName(), oAuth2UserInfo.getEmail());
-        Owner owner;
+        Optional<OwnerEntity> optionalUser = ownerRepository.findByUsernameOrEmail(oAuth2UserInfo.getName(), oAuth2UserInfo.getEmail());
+        OwnerEntity ownerEntity;
         if (optionalUser.isPresent()) {
-            owner = optionalUser.get();
-            if (!owner.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
+            ownerEntity = optionalUser.get();
+            if (!ownerEntity.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
                 throw new OAuth2AuthenticationProcessingException("You're signed up with "
-                        + owner.getProvider() + " account. Please use your " + oAuth2UserRequest.getClientRegistration().getRegistrationId()
+                        + ownerEntity.getProvider() + " account. Please use your " + oAuth2UserRequest.getClientRegistration().getRegistrationId()
                         + " account to Login");
             }
-            owner = updateExistingUser(owner);
+            ownerEntity = updateExistingUser(ownerEntity);
         } else {
-            owner = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
+            ownerEntity = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
         }
-        return UserPrincipal.create(owner);
+        return UserPrincipal.create(ownerEntity);
     }
 
-    private Owner registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        Owner owner = new Owner();
-        owner.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
-        owner.setEmail(oAuth2UserInfo.getEmail());
-        owner.setUsername(oAuth2UserInfo.getAttributes().get("name").toString());
-        owner.setEmailVerified((Boolean) oAuth2UserInfo.getAttributes().get("email_verified"));
-        owner.setHasInfo(false);
-        return ownerRepository.save(owner);
+    private OwnerEntity registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+        OwnerEntity ownerEntity = new OwnerEntity();
+        ownerEntity.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
+        ownerEntity.setEmail(oAuth2UserInfo.getEmail());
+        ownerEntity.setUsername(oAuth2UserInfo.getAttributes().get("name").toString());
+        ownerEntity.setEmailVerified((Boolean) oAuth2UserInfo.getAttributes().get("email_verified"));
+        ownerEntity.setHasInfo(false);
+        return ownerRepository.save(ownerEntity);
     }
 
-    private Owner updateExistingUser(Owner owner) {
-        return ownerRepository.save(owner);
+    private OwnerEntity updateExistingUser(OwnerEntity ownerEntity) {
+        return ownerRepository.save(ownerEntity);
     }
 
 }
