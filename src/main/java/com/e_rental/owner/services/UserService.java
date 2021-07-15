@@ -11,6 +11,7 @@ import com.e_rental.owner.entities.OwnerEntity;
 import com.e_rental.owner.entities.OwnerInfoEntity;
 import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.enums.StatusCode;
+import com.e_rental.owner.handling.ForbiddenException;
 import com.e_rental.owner.handling.InternationalErrorException;
 import com.e_rental.owner.handling.ResourceNotFoundException;
 import com.e_rental.owner.mappers.BuildingMapper;
@@ -147,6 +148,13 @@ public class UserService {
 
     public ResponseEntity<Object> updateOwnerInfo(long ownerId, UpdateOwnerRequest updateOwnerRequest) throws Exception {
         try {
+            // Check authentication before do anything
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
+            if (!userPrincipal.getId().equals(ownerId)) {
+                throw new ForbiddenException();
+            }
+
             OwnerEntity ownerEntity = ownerRepository.findById(ownerId).orElseThrow(ResourceNotFoundException::new);
 
             Long infoId = null;
@@ -178,8 +186,10 @@ public class UserService {
                 res.setLastName(updateOwnerRequest.getLastName());
             }
             return ResponseEntity.status(HttpStatus.OK).body(res);
-        } catch (EntityNotFoundException ee) {
+        } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(String.format(messageSourceUtil.getMessage("resource.notExist"), "Owner"));
+        } catch (ForbiddenException e) {
+            throw new ForbiddenException(String.format(messageSourceUtil.getMessage("resource.notCorrect"), "Owner"));
         } catch (Exception e){
             e.printStackTrace();
             throw new InternationalErrorException(messageSourceUtil.getMessage("error.server"));
@@ -188,6 +198,13 @@ public class UserService {
 
     public ResponseEntity<Response> createBuilding(Long ownerId, CreateBuildingRequest createBuildingRequest) throws Exception {
         try {
+            // Check authentication before do anything
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
+            if (!userPrincipal.getId().equals(ownerId)) {
+                throw new ForbiddenException();
+            }
+
             OwnerEntity ownerEntity = ownerRepository.findById(ownerId).orElseThrow(ResourceNotFoundException::new);
 
             BuildingEntity buildingEntity = BuildingMapper.INSTANCE.toBuildingEntity(createBuildingRequest);
@@ -195,8 +212,10 @@ public class UserService {
 
             buildingRepository.save(buildingEntity);
             return ResponseEntity.status(HttpStatus.OK).body(new Response());
-        } catch (ResourceNotFoundException ee) {
+        } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException(String.format(messageSourceUtil.getMessage("resource.notExist"), "Owner"));
+        } catch (ForbiddenException e) {
+            throw new ForbiddenException(String.format(messageSourceUtil.getMessage("resource.notCorrect"), "Owner"));
         } catch (Exception e){
             e.printStackTrace();
             throw new InternationalErrorException(messageSourceUtil.getMessage("error.server"));

@@ -2,6 +2,7 @@ package com.e_rental.owner.enums;
 
 public enum StatusCode {
     BAD_REQUEST("BAD_REQUEST"),
+    FORBIDDEN("FORBIDDEN"),
     ACCESS_DENY("ACCESS_DENY"),
     NOT_FOUND("NOT_FOUND"),
     SUCCESS("SUCCESS"),
