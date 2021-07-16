@@ -32,4 +32,7 @@ public class OwnerInfoResponse extends  Response{
 
     @JsonProperty(value = "address")
     private String address;
+
+    @JsonProperty(value = "has_info")
+    private Boolean hasInfo;
 }

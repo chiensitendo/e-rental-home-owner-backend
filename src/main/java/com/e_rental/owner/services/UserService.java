@@ -182,4 +182,27 @@ public class UserService {
             throw new InternationalErrorException(messageSourceUtil.getMessage("error.server"));
         }
     }
+
+    public ResponseEntity<OwnerInfoResponse> getOwnerInfo(long id) throws Exception {
+        try {
+            OwnerInfoResponse res = new OwnerInfoResponse();
+            Owner owner = Optional.of(ownerRepository.getById(id))
+                    .orElseThrow();
+            if (owner.getHasInfo() == false) {
+                res.setHasInfo(false);
+            } else {
+                OwnerInfo ownerInfo = owner.getInfo();
+                res = ownerInfoMapper.toOwnerInfoResponse(ownerInfo);
+                res.setHasInfo(true);
+            }
+            res.setCode(StatusCode.SUCCESS.getCode());
+
+            return ResponseEntity.status(HttpStatus.OK).body(res);
+        } catch (EntityNotFoundException ee) {
+            throw new ResourceNotFoundException(messageSourceUtil.getMessage("account.notExist"));
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new InternationalErrorException(messageSourceUtil.getMessage("error.server"));
+        }
+    }
 }
