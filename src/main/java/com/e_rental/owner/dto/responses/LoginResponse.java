@@ -27,4 +27,16 @@ public class LoginResponse extends Response {
 
     @JsonProperty
     long expiredTime;
+
+    @JsonProperty
+    String userName;
+
+    @JsonProperty
+    String firstName;
+
+    @JsonProperty
+    String lastName;
+
+    @JsonProperty
+    Boolean hasInfo;
 }

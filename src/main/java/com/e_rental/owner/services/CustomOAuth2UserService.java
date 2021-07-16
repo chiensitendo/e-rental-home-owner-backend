@@ -1,6 +1,7 @@
 package com.e_rental.owner.services;
 
 import com.e_rental.owner.entities.Owner;
+import com.e_rental.owner.entities.OwnerInfo;
 import com.e_rental.owner.enums.AuthProvider;
 import com.e_rental.owner.handling.OAuth2AuthenticationProcessingException;
 import com.e_rental.owner.repositories.OwnerRepository;
@@ -65,9 +66,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Owner owner = new Owner();
         owner.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
         owner.setEmail(oAuth2UserInfo.getEmail());
-        owner.setUsername(oAuth2UserInfo.getAttributes().get("name").toString());
+        owner.setUsername(oAuth2UserInfo.getEmail());
         owner.setEmailVerified((Boolean) oAuth2UserInfo.getAttributes().get("email_verified"));
         owner.setHasInfo(false);
+        OwnerInfo info = new OwnerInfo();
+        info.setOwner(owner);
+        info.setLastName(oAuth2UserInfo.getAttributes().get("name").toString());
+        owner.setInfo(info);
         return ownerRepository.save(owner);
     }
 

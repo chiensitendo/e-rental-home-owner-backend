@@ -24,6 +24,9 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     private String username;
     private String password;
     private String email;
+    private String firstname;
+    private String lastname;
+    private Boolean hasInfo;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
@@ -36,6 +39,14 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         userPrincipal.setUsername(owner.getUsername());
         userPrincipal.setEmail(owner.getEmail());
         userPrincipal.setPassword(owner.getPassword());
+        userPrincipal.setHasInfo(owner.getHasInfo());
+        if (owner.getInfo() != null){
+            userPrincipal.setFirstname(owner.getInfo().getFirstName());
+            userPrincipal.setLastname(owner.getInfo().getLastName());
+        } else {
+            userPrincipal.setHasInfo(false);
+        }
+
         userPrincipal.setAuthorities(authorities);
 
         return userPrincipal;

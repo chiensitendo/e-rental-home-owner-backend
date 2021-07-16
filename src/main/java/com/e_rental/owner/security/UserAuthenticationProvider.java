@@ -44,7 +44,7 @@ public class UserAuthenticationProvider {
         claims.put("role", userPrincipal.getAuthorities());
         claims.put("email", userPrincipal.getEmail());
         claims.put("username", userPrincipal.getUsername());
-
+        claims.put("has_info", userPrincipal.getHasInfo());
         Date now = new Date();
         Date validity = new Date(now.getTime() + SecurityConstants.EXPIRATION_TIME);
 

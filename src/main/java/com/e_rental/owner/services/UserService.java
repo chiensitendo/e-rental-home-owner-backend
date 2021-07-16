@@ -96,7 +96,11 @@ public class UserService {
             res.setToken(userAuthenticationProvider.createToken(userPrincipal));
             res.setTokenType(SecurityConstants.TOKEN_PREFIX.strip());
             res.setExpiredTime(SecurityConstants.EXPIRATION_TIME);
-
+            res.setUserName(userPrincipal.getUsername());
+            res.setFirstName(userPrincipal.getFirstname());
+            res.setLastName(userPrincipal.getLastname());
+            res.setHasInfo(userPrincipal.getHasInfo());
+//            userPrincipal
             return ResponseEntity.ok(res);
 
         } catch (AuthenticationException e) {
@@ -188,7 +192,8 @@ public class UserService {
             OwnerInfoResponse res = new OwnerInfoResponse();
             Owner owner = Optional.of(ownerRepository.getById(id))
                     .orElseThrow();
-            if (owner.getHasInfo() == false) {
+            res.setHasInfo(owner.getHasInfo());
+            if (owner.getInfo() == null) {
                 res.setHasInfo(false);
             } else {
                 OwnerInfo ownerInfo = owner.getInfo();
