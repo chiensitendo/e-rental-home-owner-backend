@@ -4,6 +4,7 @@ import com.e_rental.owner.dto.ErrorDto;
 import com.e_rental.owner.dto.request.LoginRequest;
 import com.e_rental.owner.dto.request.SignUpRequest;
 import com.e_rental.owner.dto.request.UpdateOwnerRequest;
+import com.e_rental.owner.dto.responses.OwnerInfoResponse;
 import com.e_rental.owner.dto.responses.OwnerResponse;
 import com.e_rental.owner.dto.responses.LoginResponse;
 import com.e_rental.owner.dto.responses.OwnerListResponse;
@@ -43,6 +44,11 @@ public class OwnerController {
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateOwnerInfo(@PathVariable("id") long id, @Validated @RequestBody UpdateOwnerRequest updateOwnerRequest) throws Exception{
         return userService.updateOwnerInfo(id, updateOwnerRequest);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OwnerInfoResponse> getOwnerInfo(@PathVariable("id") long id) throws Exception{
+        return userService.getOwnerInfo(id);
     }
 
 }
