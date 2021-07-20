@@ -10,6 +10,7 @@ import com.e_rental.owner.entities.Owner;
 import com.e_rental.owner.entities.OwnerInfo;
 import com.e_rental.owner.enums.Role;
 import com.e_rental.owner.enums.StatusCode;
+import com.e_rental.owner.handling.BadRequestException;
 import com.e_rental.owner.handling.InternationalErrorException;
 import com.e_rental.owner.handling.ResourceNotFoundException;
 import com.e_rental.owner.mappers.OwnerInfoMapper;
@@ -100,6 +101,7 @@ public class UserService {
             res.setFirstName(userPrincipal.getFirstname());
             res.setLastName(userPrincipal.getLastname());
             res.setHasInfo(userPrincipal.getHasInfo());
+            res.setEmail(userPrincipal.getEmail());
 //            userPrincipal
             return ResponseEntity.ok(res);
 
@@ -145,13 +147,18 @@ public class UserService {
 
         return new ResponseEntity<OwnerResponse>(ownerResponse, HttpStatus.CREATED);
     }
-
-    public ResponseEntity<Object> updateOwnerInfo(long id, UpdateOwnerRequest updateOwnerRequest) throws Exception {
+    @Transactional
+    public ResponseEntity<OwnerInfoResponse> updateOwnerInfo(long id, UpdateOwnerRequest updateOwnerRequest) throws Exception {
         try {
+            if (ownerRepository.existsByIdNotAndUsername(id,updateOwnerRequest.getUserName())) {
+                throw new BadRequestException(messageSourceUtil.getMessage("username.exist"));
+            }
             Owner owner = Optional.of(ownerRepository.getById(id))
                     .orElseThrow();
             Long infoId = null;
-            if (owner.getHasInfo() == false) {
+            owner.setUsername(updateOwnerRequest.getUserName());
+            owner.setHasInfo(owner.getInfo() != null);
+            if (owner.getInfo() == null) {
                 // create new info
                 OwnerInfo ownerInfo = ownerInfoMapper.toOwnerInfo(updateOwnerRequest);
                 owner.setInfo(ownerInfo);
@@ -169,7 +176,7 @@ public class UserService {
             OwnerInfoResponse res = new OwnerInfoResponse();
             res.setCode(StatusCode.SUCCESS.getCode());
             res.setMessage(messageSourceUtil.getMessage("account.info.update.success"));
-            if(updateOwnerRequest != null){
+            if (updateOwnerRequest != null) {
                 res.setGender(updateOwnerRequest.getGender());
                 res.setAddress(updateOwnerRequest.getAddress());
                 res.setOwnerId(owner.getId());
@@ -177,8 +184,13 @@ public class UserService {
                 res.setProvinceId(updateOwnerRequest.getProvinceId());
                 res.setFirstName(updateOwnerRequest.getFirstName());
                 res.setLastName(updateOwnerRequest.getLastName());
+                res.setHasInfo(owner.getHasInfo());
+                res.setEmail(owner.getEmail());
             }
             return ResponseEntity.status(HttpStatus.OK).body(res);
+        } catch (BadRequestException be){
+
+            throw be;
         } catch (EntityNotFoundException ee) {
             throw new ResourceNotFoundException(messageSourceUtil.getMessage("account.notExist"));
         } catch (Exception e){
@@ -198,7 +210,8 @@ public class UserService {
             } else {
                 OwnerInfo ownerInfo = owner.getInfo();
                 res = ownerInfoMapper.toOwnerInfoResponse(ownerInfo);
-                res.setHasInfo(true);
+                res.setEmail(owner.getEmail());
+                res.setHasInfo(owner.getHasInfo());
             }
             res.setCode(StatusCode.SUCCESS.getCode());
 

@@ -12,6 +12,10 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
 
     boolean existsByUsername(String username);
 
+    boolean existsByUsernameAndEmail(String username, String email);
+
+    boolean existsByIdNotAndUsername(Long id, String username);
+
 //    Optional<Owner> findByEmail(String email);
 
     Optional<Owner> findByUsernameOrEmail(String username, String email);

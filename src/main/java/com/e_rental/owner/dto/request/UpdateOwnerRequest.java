@@ -13,6 +13,9 @@ public class UpdateOwnerRequest {
     @JsonProperty(value = "firstName")
     private String firstName;
 
+    @JsonProperty(value = "userName")
+    private String userName;
+
     @JsonProperty(value = "lastName")
     private String lastName;
 

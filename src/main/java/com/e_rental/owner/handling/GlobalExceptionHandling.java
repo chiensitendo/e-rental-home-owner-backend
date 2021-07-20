@@ -34,4 +34,12 @@ public class GlobalExceptionHandling extends ExceptionHandlerExceptionResolver {
         res.setMessage(err.getMessage());
         return ResponseEntity.internalServerError().body(res);
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    private ResponseEntity<? extends Response> processErrorDto(BadRequestException err) {
+        Response res = new Response();
+        res.setCode(StatusCode.BAD_REQUEST.getCode());
+        res.setMessage(err.getMessage());
+        return ResponseEntity.badRequest().body(res);
+    }
 }

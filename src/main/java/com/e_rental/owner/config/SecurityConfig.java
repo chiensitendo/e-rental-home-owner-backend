@@ -6,6 +6,7 @@ import com.e_rental.owner.security.OAuth2.OAuth2AuthenticationFailureHandler;
 import com.e_rental.owner.security.OAuth2.OAuth2AuthenticationSuccessHandler;
 import com.e_rental.owner.security.UserAuthenticationEntryPoint;
 import com.e_rental.owner.security.UserAuthenticationProvider;
+import com.e_rental.owner.security.WebSecurityCorsFilter;
 import com.e_rental.owner.services.CustomOAuth2UserService;
 import com.e_rental.owner.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -129,7 +131,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .successHandler(oAuth2AuthenticationSuccessHandler)
             .failureHandler(oAuth2AuthenticationFailureHandler);
-
+        http.addFilterBefore(new WebSecurityCorsFilter() , ChannelProcessingFilter.class);
         http.addFilterBefore(new JwtAuthFilter(userAuthenticationProvider, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
 
     }

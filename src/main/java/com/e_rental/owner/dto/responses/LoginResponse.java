@@ -39,4 +39,7 @@ public class LoginResponse extends Response {
 
     @JsonProperty
     Boolean hasInfo;
+
+    @JsonProperty
+    String email;
 }

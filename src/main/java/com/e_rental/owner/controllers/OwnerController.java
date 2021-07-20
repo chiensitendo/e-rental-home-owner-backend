@@ -42,7 +42,7 @@ public class OwnerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateOwnerInfo(@PathVariable("id") long id, @Validated @RequestBody UpdateOwnerRequest updateOwnerRequest) throws Exception{
+    public ResponseEntity<OwnerInfoResponse> updateOwnerInfo(@PathVariable("id") long id, @Validated @RequestBody UpdateOwnerRequest updateOwnerRequest) throws Exception{
         return userService.updateOwnerInfo(id, updateOwnerRequest);
     }
 
