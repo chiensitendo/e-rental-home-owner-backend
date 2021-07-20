@@ -156,7 +156,9 @@ public class UserService {
             Owner owner = Optional.of(ownerRepository.getById(id))
                     .orElseThrow();
             Long infoId = null;
-            owner.setUsername(updateOwnerRequest.getUserName());
+            if (updateOwnerRequest.getUserName() != null && updateOwnerRequest.getUserName() != ""){
+                owner.setUsername(updateOwnerRequest.getUserName());
+            }
             owner.setHasInfo(owner.getInfo() != null);
             if (owner.getInfo() == null) {
                 // create new info
